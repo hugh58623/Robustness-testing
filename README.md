@@ -6,9 +6,9 @@ The repository contains the detailed results and replication package for the pap
 
 Our proposed approach of our experiments and our research questions:
 
-![Framework](./docs/workflow.jpg  "Overall framework")
+![Framework](./approach.png  "Our proposed approach in this study to address our RQs")
 
-We organize the this repository into following folders:
+We use this repository to answer following questions:
 
 1. 'models' contains our studied anomaly detection models, both traditional and deep-learning models.
     - Traditional models (i.e., SVM, decision tree, logistic regression, random forest)
