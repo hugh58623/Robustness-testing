@@ -1,10 +1,10 @@
 # Log Representation - Supplimental Materials
-The repository contains the detailed results and replication package for the paper "On the Effectiveness of Log Representation for Log-based Anomaly Detection".
+The repository contains the detailed results and replication package for the paper "Adversarial Attack Classification and Robustness Testing for Code Generation Models".
 
 
 ## Introduction
 
-The overall framework of our experiments and our research questions:
+Our proposed approach of our experiments and our research questions:
 
 ![Framework](./docs/workflow.jpg  "Overall framework")
 
