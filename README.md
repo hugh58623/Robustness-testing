@@ -20,12 +20,35 @@ RQ3: How does changing comments within the code at various levels impact the acc
 ## Dependencies
 We recommend using an Anaconda environment with Python version 3.9, and following Python requirement should be met.
 
-* Numpy 1.20.3
-* PyTorch 1.10.1
-* Sklearn 0.24.2
+* chardet==4.0.0
+* dbus-python==1.2.18
+* distro==1.5.0
+* fail2ban==1.0.2
+* gpg==1.15.1
+* idna==2.10
+* libcomps==0.1.18
+* nftables==0.1
+* ntpsec==1.2.2a0
+* pexpect==4.9.0
+* ptyprocess==0.7.0
+* PyGObject==3.40.1
+* pykickstart==3.32.10
+* pyparsing==2.4.7
+* PySocks==1.7.1
+* python-dateutil==2.8.1
+* PyYAML==5.4.1
+* requests==2.25.1
+* rpm==4.16.1.3
+* selinux==3.5
+* sepolicy==3.5
+* setools==4.4.3
+* six==1.15.0
+* systemd-python==234
+* urllib3==1.26.5
+
 
 ## Dataset
-
+HumanEval, MBPP
 ### Source
 We use HDFS, BGL, Spirit and Thunderbird datasets. 
 Original datasets are accessed from [LogHub](https://github.com/logpai/loghub) project.
