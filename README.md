@@ -1,157 +1,181 @@
-# ReCode: Robustness Evaluation of Code Generation Models
+# Log Representation - Supplimental Materials
+The repository contains the detailed results and replication package for the paper "On the Effectiveness of Log Representation for Log-based Anomaly Detection".
 
-This is the repo for ReCode ([arXiv](https://arxiv.org/abs/2212.10264)), providing a comprehensive evaluation for the practical robustness of code generation models like CodeGEN, Incoder, GPT-J. In specific, this benchmark provides over 30 different general perturbations on docstrings, function names, and codes. The perturbations are carefully selected and implemented such that the perturbed datasets are naturally and semantically close to the original non-perturbed datasets. All the perturbations are well implemented with automatic generation, providing easy usage and customization. With these perturbations available in our benchmark, the user can get to know a comprehensive analysis of model robustness performance.
 
-Our benchmark is general with regard to datasets and models. Given the perturbed datasets, the users can evaluate any of public/customized code generation models with the default inference provided by our benchmark. We also allow users to provide their own datasets and models to evaluate robustness in our benchmark by configuring `config.json` and inference script `evaluate-public-models/run_eval_models.sh`.
+## Introduction
 
-After the model evaluation is done on perturbed datasets, we provide overall robustness analysis for the evaluated models such that the users can easily compare across different models and get aware of the possible practical robustness problems.
+The overall framework of our experiments and our research questions:
 
-Lastly, we release a standard version of the perturbed datasets `dataset-release/perturbed-finalized` for HumanEval and MBPP in this benchmark for general robustness evaluation and compare across different models proposed in future works.
+![Framework](./docs/workflow.jpg  "Overall framework")
 
-## Installation
-We are using python 3.8, cuda 11.6. Anaconda would be recommended. Please run the following commands for installation.
-```
-conda deactivate; conda env remove --name ReCode
-conda create --name ReCode python=3.8
-conda activate ReCode
-```
+We organize the this repository into following folders:
 
-Installing huggingface for model inference
-```
-pip install transformers==4.21.1
-pip install -U torch==1.11.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
-```
+1. 'models' contains our studied anomaly detection models, both traditional and deep-learning models.
+    - Traditional models (i.e., SVM, decision tree, logistic regression, random forest)
+    - Deep-learning models (i.e., MLP, CNN, LSTM)
+2. 'logrep' contains the codes we used to generated all the studied log representations.
+    - Feature generation
+    - Feature aggregation (from event-level to sequence-level)
+3. 'results' contains the experimental results which are not listed on the paper as the space limit.
+    - Results for [RQ1](https://github.com/mooselab/suppmaterial-LogRepForAnomalyDetection/blob/main/results/RQ1.md), [RQ2](https://github.com/mooselab/suppmaterial-LogRepForAnomalyDetection/blob/main/results/RQ2.md), [RQ3](https://github.com/mooselab/suppmaterial-LogRepForAnomalyDetection/blob/main/results/RQ3.md)
 
-Installing humaneval. Need to enable humaneval by uncommenting out execution line `exec(check_program, exec_globals)` in `execution.py`.
-```
-cd evaluate-public-models
-git clone https://github.com/openai/human-eval
-pip install -e human-eval
-cd ..
-```
+## Dependencies
+We recommend using an Anaconda environment with Python version 3.9, and following Python requirement should be met.
 
-Installing nlaugmenter for perturbations
-```
-cd nlaugmenter
-pip install -r requirements.txt
-pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz
-cd ..
-```
+* Numpy 1.20.3
+* PyTorch 1.10.1
+* Sklearn 0.24.2
 
-Installing treesitter for perturbations. Note that we customized our code syntax perturbatons based on [natgen](https://github.com/saikat107/NatGen). 
-```
-cd natgen/treesitter
-git clone https://github.com/tree-sitter/tree-sitter-python # clone the py-tree-sitter
-python build.py # build my-languages.so file
-cd ../transformations
-ln -s ../treesitter/build/my-languages.so ./
-pip install sympy
-cd ../..
-```
+## Dataset
 
-## Running our ReCode benchmark
-We provide general APIs for running our benchmark in `run_robust.py`. We have four main types of perturbations (1) nlaugmenter on docstrings (nlaugmenter) (2) function rename (func_name) (3) code syntax (natgen) (4) code format (format). Multiple variances are defined and implemented for each type of perturbation. One can find detailed config in `config.json`. 
+### Source
+We use HDFS, BGL, Spirit and Thunderbird datasets. 
+Original datasets are accessed from [LogHub](https://github.com/logpai/loghub) project.
+(We do not provide generated log representations as they are in huge size. Please generate them with our codes provided.)
 
-Overall we have multiple steps for benchmark as described in detail in the following sections: (1) [perturb] creating perturbed datasets, (2) [exec] run the models on nominal/perturbed datasets, and (3) [report_coarse] collect and summarize running results according to our proposed robustness metrics.
+Due to computational limitations, we utilized subsets of the Spirit and Thunderbird datasets in our experiments. These subsets are available for access at [Zenodo](https://doi.org/10.5281/zenodo.7851024).
 
-### Step1: Create perturbed datasets [perturb] 
+### Extra regular expression parsed to the Drain parser
 
-[perturb] option is used to create perturbed datasets. One can run the following commands to perturb based on one's own nominal datasets (path config in `config.json`). 
-
-Note that we also released our perturbed data used for evaluation in paper as a general robustness benchmark (`dataset-release/perturbed_finalized`). To directly evaluate on our created benchmark datasets, please change `output_adv_path` in `config.json` to that path and skip all the following commands for perturbing in this [perturb] section!
-
+We used Drain to parse the studied datasets. We adopted the default parameters from the following paper for parsing.
 
 ```
-python run_robust.py create_partial natgen # preparing partial code for code perturbations
-python run_robust.py perturb nlaugmenter # perturb with nlaugmenter transformations on docstrings
-python run_robust.py perturb func_name # perturb with function rename
-python run_robust.py perturb natgen # perturb with code syntax transformations
-python run_robust.py perturb code # perturb with code format transformations
+Pinjia He, Jieming Zhu, Zibin Zheng, and Michael R. Lyu. Drain: An Online Log Parsing Approach with Fixed Depth Tree, Proceedings of the 24th International Conference on Web Services (ICWS), 2017.
 ```
 
-One can specify augmentation method for each type of perturbations with --aug_method, index can be found in `config.json`. --datasets allow to specify perturbed datasets.
-```
-python run_robust.py perturb func_name --aug_method 0 --datasets humaneval mbpp # perturb with function rename CamelCase (index=0 defined in config.json) on humaneval and mbpp
-``` 
+However, Drain parser generated too much templates with the default setting due to the failure of spotting some dynamic fields. We passed the following regular expression to reduce the amount.
 
-Our benchmark also provides [analysis] option to check how each sample is perturbed one by one
-```
-python run_robust.py analysis func_name --aug_method 0 --models None # check perturbed data one by one with function rename CamelCase (index=0 defined in config.json)
-```
+For BGL dataset:
 
-To debug and customize perturbations, one can use low-level APIs. Turn on --print_sample to debug and check customized perturbations on each sample.
+For configuration used in our experiment:
 ```
-python perturb.py --method format --aug_method 0 --print_sample
-```
-
-### Step2: Run on perturbed datasets [exec] 
-
-[exec] option is used for evaluating targeted models on perturbed datasets. To evaluate models with our benchmark, please config the targeted nominal/perturbed datasets and model path correctly in `config.json`. One can then run with:
-```
-python run_robust.py nominal normal # nominal evaluation with non-perturbed datasets
-python run_robust.py nominal natgen # nominal evaluation with non-perturbed partial code datasets
-python run_robust.py exec nlaugmenter # nlaugmenter perturbed datasets evaluation
-python run_robust.py exec func_name # function rename perturbed datasets evaluation
-python run_robust.py exec natgen # code structure perturbed datasets evaluation
-python run_robust.py exec format # code format transformation perturbed datasets evaluation
+regex      = [r'core\.\d+',
+              r'(?<=r)\d{1,2}',
+              r'(?<=fpr)\d{1,2}',
+              r'(0x)?[0-9a-fA-F]{8}',
+              r'(?<=\.\.)0[xX][0-9a-fA-F]+',
+              r'(?<=\.\.)\d+(?!x)',
+              r'\d+(?=:)',
+              r'^\d+$',  #only numbers
+              r'(?<=\=)\d+(?!x)',
+              r'(?<=\=)0[xX][0-9a-fA-F]+',
+              r'(?<=\ )[A-Z][\+|\-](?= |$)',
+              r'(?<=:\ )[A-Z](?= |$)',
+              r'(?<=\ [A-Z]\ )[A-Z](?= |$)'
+              ]
 ```
 
-If one wants to evaluate specific augmentation method, one can easily run
-```
-python run_robust.py exec func_name --aug_method 0 # evaluate model on dataset with function rename CamelCase (index=0 defined in config.json)
-```
-
-For targeted models please use augments --models and --datasets. Note that one has to correctly config the model names and path correctly in the running shell file in `run_script` in `config.json`. Detailed running hyperparameters can be configured in that shell file. Please make sure that shell file can run correctly for nominal evaluation on your own models/datasets. Our benchmark will mainly call that file for evaluation. The default one is `evaluate-public-models/run_eval_models.sh`
-```
-python run_robust.py perturb func_name --datasets humaneval mbpp --models codegen-350M-multi codegen-350M-mono # perturb dataset humaneval mbpp on codegen-350M-multi and codegen-350M-mono
-python run_robust.py exec func_name --datasets humaneval mbpp --models codegen-350M-multi codegen-350M-mono # evaluate model on dataset humaneval mbpp on codegen-350M-multi and codegen-350M-mono
-```
-
-### Step3: Summarize running results [report_coarse]
-
-In our paper, we proposed three main robustness metrics: robust pass@k, robust drop@k, and robust relative@k. To summarize and collect the evaluated results, one can run the following commands. In specific, `report_coarse` option summarizes the robustness numbers for all thee metrics (as shown in main tables in paper). `report` option summarizes the detailed robustness results into csv (detailed tables in appendix of paper). The results will be saved as tables in `csv_coarse` and `csv`.
-```
-python run_robust.py report_coarse func_name --models codegen-350M-multi codegen-350M-mono --datasets humaneval # get summarized results for dataset perturbed with function rename
-python run_robust.py report func_name --models codegen-350M-multi codegen-350M-mono --datasets humaneval # get detailed results for dataset perturbed with function rename
-```
-
-`analysis` option with --models given provides prints for the perturbed data and completion by the model for each prompt.
-```
-python run_robust.py analysis func_name --models codegen-350M-mono --datasets humaneval # analyze completion samples for dataset perturbed with function rename by codegen-350M-mono
-```
-
-
-## License
-The ReCode benchmark is under Apache-2.0 license.
-
-
-## Cite this work
-
-Please cite with the following bibtex
+We refined the RegExps for more accurate parsing as follows:
 
 ```
-@article{recode_wang2022,
-  title = {ReCode: Robustness Evaluation of Code Generation Models},
-  author = {Wang, Shiqi and
-   Zheng, Li and
-   Qian, Haifeng and
-   Yang, Chenghao and
-   Wang, Zijian and
-   Kumar, Varun and
-   Shang, Mingyue and
-   Tan, Samson and
-   Ray, Baishakhi and
-   Bhatia, Parminder and
-   Nallapati, Ramesh and
-   Ramanathan, Murali Krishna and
-   Roth, Dan and
-   Xiang, Bing},
-  doi = {10.48550/arXiv.2212.10264},
-  url = {https://arxiv.org/abs/2212.10264},
-  keywords = {Machine Learning (cs.LG), Computation and Language (cs.CL)},
-  publisher = {arXiv},
-  year = {2022},
-  copyright = {Creative Commons Attribution 4.0 International}
+              r'core\.\d+',
+              r'(?<=:)(\ [A-Z][+-]?)+(?![a-z])', # match X+ A C Y+......
+              r'(?<=r)\d{1,2}',
+              r'(?<=fpr)\d{1,2}',
+              r'(0x)?[0-9a-fA-F]{8}',
+              r'(?<=\.\.)0[xX][0-9a-fA-F]+',
+              r'(?<=\.\.)\d+(?!x)',
+              r'\d+(?=:)',
+              r'^\d+$',  #only numbers
+              r'(?<=\=)\d+(?!x)',
+              r'(?<=\=)0[xX][0-9a-fA-F]+'  # for hexadecimal
+```
+
+For Spirit dataset:
+```
+regex      = [r'^\d+$',  #only numbers
+              r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}[^0-9]',   # IP address
+              r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$',   # MAC address
+              r'\d{14}(.)[0-9A-Z]{10,}',   # message id
+              r'(?<=@#)(?<=#)\d+',   #  message id special format
+              r'[0-9A-Z]{10,}', # id
+              r'(?<=:|=)(\d|\w+)(?=>|,| |$|\\)'   # parameter after:|=
+             ]
+```
+
+For Thunderbird dataset:
+
+```
+regex      = [
+             r'(\d+\.){3}\d+',
+             r'((a|b|c|d)n(\d){2,}\ ?)+', # a|b|c|dn+number
+             r'\d{14}(.)[0-9A-Z]{10,}@tbird-#\d+#', # message id
+             r'(?![0-9]+\W)(?![a-zA-Z]+\W)(?<!_|\w)[0-9A-Za-z]{8,}(?!_)',      # char+numbers,
+             r'(/|)([0-9]+\.){3}[0-9]+(:[0-9]+|)(:|)', # ip address
+             r'\d{8,}',   # numbers + 8
+             r'(?<=:)(\d+)(?= )',    # parameter after :
+             r'(?<=pid=)(\d+)(?= )',   # pid=XXXXX
+             r'(?<=Lustre: )(\d+)(?=:)', # Lustre:
+             r'(?<=,)(\d+)(?=\))'
+             ]
+```
+
+## Experiments
+
+The general process to replicate our results is:
+
+1. Generate structured parsed dataset using [loglizer](https://github.com/logpai/loglizer) with Drain parser into JSON format.
+2. Split the dataset into training and testing set and save as NPZ format, with `x_train`, `y_train`, `x_test`, `y_test`.
+3. Generate selected log representations with corresponding codes within the `logrep` folder, and generates representations and save as NPY or NPZ format.
+4. If the studied technique generates event-level representations, use the `aggregation.py` in the `logrep` folder to merge them into sequence-level for the models that demand sequence-level input.
+5. Load generated representations and corresponding labels, and run the models within the `models` folder to get the results.
+
+* Sample parsed data and splitted data are provided in `samples` folder.
+
+
+## Network details for CNN and LSTM
+
+### CNN
+|    Layer    |                          Parameters                          |      Output      |
+| :---------: | :----------------------------------------------------------: | :--------------: |
+|  __Input__  |                 _win\_size * Embeddin\_size_                 |       N/A        |
+|   __FC__    |                    _Embedding\_size * 50_                    | _Win\_size * 50_ |
+| __Conv 1__  | _kernel_size=[3, 50], stride=[1, 1], padding=valid, MaxPool2D:[𝑤𝑖𝑛_𝑠𝑖𝑧𝑒 − 3, 1], LeakyReLU_ |   _50 * 1 * 1_   |
+| __Conv 2__  | _kernel\_size=[4, 50], stride=[1, 1], padding=valid, MaxPool2D: [𝑤𝑖𝑛_𝑠𝑖𝑧𝑒 − 3, 1], LeakyReLU_ |   _50 * 1 * 1_   |
+| __Conv 3__  | _kernel\_size=[5, 50], stride=[1, 1], padding=valid, MaxPool2D:[𝑤𝑖𝑛_𝑠𝑖𝑧𝑒 − 4, 1], LeakyReLU_ |   _50 * 1 * 1_   |
+| __Concat__  | _Concatenate feature maps of Conv1, Conv2, Conv3, Dropout(0.5)_ |  _150 * 1 * 1_   |
+|   __FC__    |                         _[150 * 2]_                          |       $2$        |
+| __Output__ |                           _Softmax_                           |                  |
+
+
+
+### LSTM
+
+|   Layer    |           Parameters            |        Output         |
+| :--------: | :-----------------------------: | :-------------------: |
+| __Input__  | _[win\_size * Embedding\_size]_ |         _N/A_         |
+|  __LSTM__  |        _Hidden\_dim = 8_        | _Embedding\_size * 8_ |
+|   __FC__   |            _[8 * 2]_            |          _2_          |
+| __Output__ |            _Softmax_            |                       |
+
+
+## Acknowledgements
+
+Our implimentation bases on or contains many references to following repositories:
+
+* [logparser](https://github.com/logpai/logparser)
+* [loglizer](https://github.com/logpai/loglizer)
+* [deep-loglizer](https://github.com/logpai/deep-loglizer)
+* [ScottKnottESD](https://github.com/klainfo/ScottKnottESD)
+* [clip(bert)-as-service](https://github.com/jina-ai/clip-as-service)
+* [imbalanced-dataset-sampler](https://github.com/ufoym/imbalanced-dataset-sampler)
+
+## Citing & Contacts
+
+Please cite our work if you find it helpful to your research.
+
+Wu, X., Li, H. & Khomh, F. On the effectiveness of log representation for log-based anomaly detection. Empir Software Eng 28, 137 (2023). https://doi.org/10.1007/s10664-023-10364-1
+
+```
+@article{article,
+year = {2023},
+month = {10},
+pages = {},
+title = {On the effectiveness of log representation for log-based anomaly detection},
+volume = {28},
+journal = {Empirical Software Engineering},
+doi = {10.1007/s10664-023-10364-1}
 }
-
 ```
+
+
