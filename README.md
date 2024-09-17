@@ -172,23 +172,10 @@ python run_robust2.py report random --perturbed_result_path "perturbed_dataset_o
 Our implimentation bases on or contains many references to following repositories:
 
 * [ReCode](https://github.com/amazon-science/recode)
+* [OpenAttack](https://github.com/thunlp/OpenAttack/tree/master?tab=readme-ov-file)
 
 ## Citing & Contacts
 
-Please cite our work if you find it helpful to your research.
 
-Wu, X., Li, H. & Khomh, F. On the effectiveness of log representation for log-based anomaly detection. Empir Software Eng 28, 137 (2023). https://doi.org/10.1007/s10664-023-10364-1
-
-```
-@article{article,
-year = {2023},
-month = {10},
-pages = {},
-title = {On the effectiveness of log representation for log-based anomaly detection},
-volume = {28},
-journal = {Empirical Software Engineering},
-doi = {10.1007/s10664-023-10364-1}
-}
-```
 
 
