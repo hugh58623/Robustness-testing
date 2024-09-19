@@ -64,7 +64,7 @@ Lastly, ReCode releases a standard version of the perturbed datasets `dataset-re
 
 The general process to replicate our results for evaluating adversarial robustness in code generation models is as follows:
 
-###1. Installation: Please run the following commands for installation.
+### 1. Installation: Please run the following commands for installation.
 ```
 conda deactivate; conda env remove --name ReCode
 conda create --name ReCode python=3.10
@@ -100,7 +100,7 @@ ln -s ../treesitter/build/my-languages.so ./
 pip install sympy
 cd ../..
 ```
-###2. Running our ReCode benchmark: ReCode has four main types of perturbations (1) nlaugmenter on docstrings (nlaugmenter) (2) function rename (func_name) (3) code syntax (natgen) (4) code format (format). Multiple variances are defined and implemented for each type of perturbation. One can find detailed config in `config.json`. 
+### 2. Running our ReCode benchmark: ReCode has four main types of perturbations (1) nlaugmenter on docstrings (nlaugmenter) (2) function rename (func_name) (3) code syntax (natgen) (4) code format (format). Multiple variances are defined and implemented for each type of perturbation. One can find detailed config in `config.json`. 
 
 Overall we have multiple steps for benchmark as described in detail in the following sections: (1) [perturb] creating perturbed datasets, (2) [exec] run the models on nominal/perturbed datasets, and (3) [report_coarse] collect and summarize running results according to our proposed robustness metrics. (4) Reclassify these perturbations into three levels(character, word, and sentence/statement levels) and three levels of granularity and research quesions. 
 #### Step1: Create perturbed datasets [perturb] 
@@ -164,7 +164,7 @@ python run_robust2.py report random --perturbed_result_path "perturbed_dataset_o
 
 "perturbed_dataset_output_dir" and "nominal_dataset_output_dir" should be modified as your own file path.
 
-###3. Reclassify perturbation result into three levels(Character-level, word-level, sentence/statement-level), and also classify them into different levels of granularity and research quesions based on perturbation part in datasets(as tables shown in paper).
+### 3. Reclassify perturbation result into three levels(Character-level, word-level, sentence/statement-level), and also classify them into different levels of granularity and research quesions based on perturbation part in datasets(as tables shown in paper).
 
 
 ## Acknowledgements
