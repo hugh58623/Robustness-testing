@@ -79,3 +79,4 @@ The following table illustrates the comparison of the attack models.
 |    VIPER    |      Blind      |     Char     | Visually similar character substitution             |
 | DeepWordBug |      Score      |     Char     | Greedy character manipulation                       |
 
+To know more information, please see the original project [OpenAttack](https://github.com/thunlp/OpenAttack/tree/master?tab=readme-ov-file).
