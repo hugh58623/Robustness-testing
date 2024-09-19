@@ -13,8 +13,8 @@ import json
 def main(ori_file_path):
     # load a fine-tuned sentiment analysis model from Transformers (you can also use our fine-tuned Victim.BERT.SST)
     print("Load model")
-    tokenizer = transformers.AutoTokenizer.from_pretrained(r'/home/user/path_to_distilbert-base-uncased/')
-    model = transformers.AutoModelForSequenceClassification.from_pretrained(r'/home/path_to_distilbert-base-uncased/', output_hidden_states=False)
+    tokenizer = transformers.AutoTokenizer.from_pretrained('distilbert-base-uncased')
+    model = transformers.AutoModelForSequenceClassification.from_pretrained('distilbert-base-uncased', output_hidden_states=False)
     victim = OpenAttack.classifiers.TransformersClassifier(model, tokenizer, model.distilbert.embeddings.word_embeddings)
 
     print("New Attacker")
