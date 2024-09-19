@@ -13,8 +13,8 @@ import json
 def main(ori_file_path):
     # load a fine-tuned sentiment analysis model from Transformers (you can also use our fine-tuned Victim.BERT.SST)
     print("Load model")
-    tokenizer = transformers.AutoTokenizer.from_pretrained(r'/home/yangliu6/scratch/OpenAttack-xiugai/Models/distilbert-base-uncased/')
-    model = transformers.AutoModelForSequenceClassification.from_pretrained(r'/home/yangliu6/scratch/OpenAttack-xiugai/Models/distilbert-base-uncased/', output_hidden_states=False)
+    tokenizer = transformers.AutoTokenizer.from_pretrained(r'/home/user/path_to_distilbert-base-uncased/')
+    model = transformers.AutoModelForSequenceClassification.from_pretrained(r'/home/path_to_distilbert-base-uncased/', output_hidden_states=False)
     victim = OpenAttack.classifiers.TransformersClassifier(model, tokenizer, model.distilbert.embeddings.word_embeddings)
 
     print("New Attacker")
@@ -40,5 +40,5 @@ def main(ori_file_path):
     attack_eval.eval(ori_file_path, dataset, visualize=True)
 
 if __name__ == "__main__":
-    ori_file_path = 'D:/project/freework/db_attack/humaneval_partial.jsonl'
+    ori_file_path = 'path_to_dataset'
     main(ori_file_path)
