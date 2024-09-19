@@ -20,6 +20,12 @@ After installation, you can try running `demo.py` to check if OpenAttack works w
 python demo.py
 ```
 
+## Create perturbed datasets [perturb] 
+Go to /OpenAttack/examples/test.py, here is an example to use PWWS: "attacker = OpenAttack.attackers.PWWSAttacker()" . You can modify it as the attack models you want to use. You can check the attack models in Robustness-testing/OpenAttack/OpenAttack/attackers/. For example, if you want to use "viper", you can go to Robustness-testing/OpenAttack/OpenAttack/attackers/viper/__init__.py, and line 19 shows the "class VIPERAttacker(ClassificationAttacker):". You should modify as "attacker = OpenAttack.attackers.VIPERAttacker()" in /OpenAttack/examples/test.py.
+
+Also you have to modify the  ori_file_path = 'path_to_dataset'.
+
+Run test.py. You will get the perturbed dataset which end of "_adv.jsonl". For example, if your original file is "HumanEval.jsonl", the perturbed datsets will be "HumanEval_adv.jsonl"
 
 ## Attack Models
 
@@ -72,42 +78,4 @@ The following table illustrates the comparison of the attack models.
 |   HotFlip   |    Gradient     |  Word, Char  | Gradient-based word or character substitution       |
 |    VIPER    |      Blind      |     Char     | Visually similar character substitution             |
 | DeepWordBug |      Score      |     Char     | Greedy character manipulation                       |
-
-## Toolkit Design
-
-Considering the significant distinctions among different attack models, we leave considerable freedom for the skeleton design of attack models, and focus more on streamlining the general processing of adversarial attacking and the common components used in attack models.
-
-OpenAttack has 7 main modules: 
-
-<img src="./docs/source/images/toolkit_framework.png" alt="toolkit_framework" style="zoom:40%;" />
-
-* **TextProcessor**: processing the original text sequence to assist attack models in generating adversarial examples;
-* **Victim**: wrapping victim models;
-* **Attacker**: comprising various attack models;
-* **AttackAssist**: packing different word/character substitution methods that are used in word-/character-level attack models and some other components used in sentence-level attack models like the paraphrasing model;
-* **Metric**: providing several adversarial example quality metrics that can serve as either the constraints on the adversarial examples during attacking or evaluation metrics for evaluating adversarial attacks;
-* **AttackEval**: evaluating textual adversarial attacks from attack effectiveness, adversarial example quality and attack efficiency;
-* **DataManager**: managing all data and saved models that are used in other modules.
-
-## Citation
-
-Please cite our [paper](https://aclanthology.org/2021.acl-demo.43.pdf) if you use this toolkit:
-
-```
-@inproceedings{zeng2020openattack,
-  title={{Openattack: An open-source textual adversarial attack toolkit}},
-  author={Zeng, Guoyang and Qi, Fanchao and Zhou, Qianrui and Zhang, Tingji and Hou, Bairu and Zang, Yuan and Liu, Zhiyuan and Sun, Maosong},
-  booktitle={Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing: System Demonstrations},
-  pages={363--371},
-  year={2021},
-  url={https://aclanthology.org/2021.acl-demo.43},
-  doi={10.18653/v1/2021.acl-demo.43}
-}
-```
-
-## Contributors
-We thank all the contributors to this project. And more contributions are very welcome.
-
-<a href="https://github.com/thunlp/OpenAttack/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=thunlp/OpenAttack"/></a>
 
