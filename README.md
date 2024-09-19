@@ -109,7 +109,7 @@ Overall we have multiple steps for benchmark as described in detail in the follo
 
 Note that ReCode released their perturbed data used for evaluation in paper as a general robustness benchmark (`dataset-release/perturbed_finalized`). To directly evaluate on the created benchmark datasets, please change `output_adv_path` in `config.json` to that path and skip all the following commands for perturbing in this [perturb] section!
 
-For Openattack part, please read the `README.md` in OpenAttack.
+For Openattack part, please read the `README.md` in [OpenAttack](https://github.com/hugh58623/Robustness-testing/blob/main/OpenAttack).
 
 
 ```
