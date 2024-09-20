@@ -148,7 +148,19 @@ python run_robust.py perturb func_name --datasets humaneval mbpp --models codege
 python run_robust.py exec func_name --datasets humaneval mbpp --models codegen-350M-multi codegen-350M-mono # evaluate model on dataset humaneval mbpp on codegen-350M-multi and codegen-350M-mono
 ```
 
-To evaluate perturbed datasets produced by Openattack, please run `evaluate-public-models/run_eval_models0.sh`. Please make sure you have modify something based on your own experimental settings. For example, if you want to test codegen-2B-mono models by datasets humaneval. You should modify following things: model_names="codegen-2B-mono", datasets="humaneval", test_file="path_to_HumanEval.jsonl", out_file="path_to_output",  module load python/3.10, source /scratch/user/ReCode/bin/activate. For the test_file and out_file, you should provide your own files or folders. The experimental setting "module load python/3.10 source /scratch/user/ReCode/bin/activate" is an example in ComputeCanada. You should adjust your own experimental settings.
+To evaluate perturbed datasets produced by Openattack, please run `evaluate-public-models/run_eval_models0.sh`. Please make sure you have modify something based on your own experimental settings. For example, if you want to test codegen-2B-mono models by datasets humaneval. You should modify following things:
+
+```
+model_names="codegen-2B-mono"
+datasets="humaneval"
+test_file="path_to_HumanEval.jsonl"
+out_file="path_to_output"
+module load python/3.10
+source /scratch/user/ReCode/bin/activate.
+```
+
+For the test_file and out_file, you should provide your own files or folders. The experimental setting "module load python/3.10 source /scratch/user/ReCode/bin/activate" is an example in ComputeCanada. You should adjust your own experimental settings.
+
 
 #### Step3: Summarize running results [report_coarse]
 
