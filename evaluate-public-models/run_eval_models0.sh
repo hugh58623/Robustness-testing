@@ -1,21 +1,23 @@
 #!/bin/bash
 #SBATCH --account=def-foutsekh
-#SBATCH --nodes 6
+#SBATCH --cpus-per-task=16
 #SBATCH --time=16:00:00
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:v100l:1
 #SBATCH --mem=64G
-#SBATCH --ntasks-per-node=8               
+#SBATCH --ntasks-per-node=1               
 #SBATCH --job-name result0
 #SBATCH --output=result0.txt
 
 # model_names="codegen-6B-multi"
-model_names="codegen-350M-mono"
+# model_names="codegen-350M-mono"
 # model_names="codegen-350M-multi"
 # model_names="codegen-2B-mono"
 # model_names="codegen-2B-multi"
 # model_names="incoder-1B"
-#model_names="incoder-6B"
-#model_names="gpt-j-6B"
+# model_names="incoder-6B"
+# model_names="gpt-j-6b"
+# model_names="CodeLlama-7b-hf"
+model_names="Meta-Llama-3-8B"
 datasets="humaneval" # or mbpp or new or perturbed dataset names
 
 num_samples=0 # zero means greedy
@@ -24,8 +26,8 @@ temperature=0.2
 
 # test_file=$1
 # output_dir=$2
-test_file="/home/yangliu6/scratch/recode/evaluate-public-models/dataset/HumanEval.jsonl"
-output_dir="/home/yangliu6/scratch/recode/evaluate-public-models/result/codegen-350M-mono/nomin/"
+test_file="/home/yangliu6/scratch/test/recode/evaluate-public-models/dataset/HumanEval.jsonl"
+output_dir="/home/yangliu6/scratch/test/recode/evaluate-public-models/result/Meta-Llama-3-8B/HumanEval/nomin/"
 # datasets=$3
 # model_names=$4
 num_gpu="${5:-1}"
@@ -62,6 +64,8 @@ for dataset in $datasets; do
                 model_provider=facebook
         elif [[ "$model_name" == *"gpt-j"* ]]; then
                 model_provider=EleutherAI
+	elif [[ "$model_name" == *"Llama"* ]]; then
+                model_provider=meta-llama
             else
                 echo "unkown model $model_name"
                 exit
@@ -80,11 +84,11 @@ for dataset in $datasets; do
 	#if false; then
 	# generate
 
-        module load python/3.8
-        source /scratch/yangliu6/recode/ReCode/bin/activate
+        module load python/3.11
+        source /scratch/yangliu6/test/recode/Download/bin/activate
         python3 ./evaluate_model.py \
-		--model_name_or_path ./$model_provider/$model_name \
-		--tokenizer_name ./$model_provider/$model_name \
+		--model_name_or_path $model_provider/$model_name \
+		--tokenizer_name $model_provider/$model_name \
 		--output_dir $output_dir \
 		--programming_lang $lang \
 		--test_file $test_file \
