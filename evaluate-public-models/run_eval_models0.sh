@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --account=def-foutsekh
 #SBATCH --cpus-per-task=16
 #SBATCH --time=16:00:00
 #SBATCH --gres=gpu:v100l:1
@@ -26,8 +25,8 @@ temperature=0.2
 
 # test_file=$1
 # output_dir=$2
-test_file="/home/yangliu6/scratch/test/recode/evaluate-public-models/dataset/HumanEval.jsonl"
-output_dir="/home/yangliu6/scratch/test/recode/evaluate-public-models/result/Meta-Llama-3-8B/HumanEval/nomin/"
+test_file="path_to_HumanEval.jsonl"
+output_dir="path_to_output"
 # datasets=$3
 # model_names=$4
 num_gpu="${5:-1}"
@@ -84,8 +83,8 @@ for dataset in $datasets; do
 	#if false; then
 	# generate
 
-        module load python/3.11
-        source /scratch/yangliu6/test/recode/Download/bin/activate
+        module load python/3.10
+        source /scratch/user/ReCode/bin/activate
         python3 ./evaluate_model.py \
 		--model_name_or_path $model_provider/$model_name \
 		--tokenizer_name $model_provider/$model_name \
