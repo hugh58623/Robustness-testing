@@ -73,7 +73,7 @@ conda activate ReCode
 Installing huggingface for model inference
 ```
 pip install transformers==4.43.2
-pip install -U torch==2.3.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+pip install -U torch==2.3.1 -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 Installing humaneval. Need to enable humaneval by uncommenting out execution line `exec(check_program, exec_globals)` in `execution.py`.
